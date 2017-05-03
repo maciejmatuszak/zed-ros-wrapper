@@ -19,7 +19,7 @@ else() # Ubuntu Desktop
     SET(OCV_VERSION "3.1")
     SET(CUDA_VERSION "8.0")
 endif()
-find_package(OpenCV ${OCV_VERSION} COMPONENTS core highgui imgproc REQUIRED)
+find_package(OpenCV ${OCV_VERSION} REQUIRED)
 find_package(CUDA ${CUDA_VERSION} REQUIRED)
 
 find_package(PCL REQUIRED)
