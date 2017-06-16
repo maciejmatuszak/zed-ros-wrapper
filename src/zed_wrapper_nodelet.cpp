@@ -583,7 +583,7 @@ namespace zed_wrapper {
             } // while loop
             zed.reset();
         }
-
+        boost::shared_ptr<dynamic_reconfigure::Server<zed_wrapper::ZedConfig>> server;
         void onInit() {
             // Launch file parameters
             resolution = sl::RESOLUTION_HD720;
@@ -690,13 +690,13 @@ namespace zed_wrapper {
                 std::this_thread::sleep_for(std::chrono::milliseconds(2000));
             }
 
-            //ERRCODE display
-            dynamic_reconfigure::Server<zed_wrapper::ZedConfig> server;
+            //Reconfigure confidence
+            server = boost::make_shared<dynamic_reconfigure::Server<zed_wrapper::ZedConfig>>();
             dynamic_reconfigure::Server<zed_wrapper::ZedConfig>::CallbackType f;
-
             f = boost::bind(&ZEDWrapperNodelet::callback, this, _1, _2);
-            server.setCallback(f);
-            confidence = 80;
+            server->setCallback(f);
+
+            nh_ns.getParam("confidence", confidence);
 
 
             // Create all the publishers

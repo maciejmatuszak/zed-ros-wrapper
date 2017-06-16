@@ -35,7 +35,17 @@ Open a terminal and build the package:
 
     cd ~/catkin_ws/
     catkin_make
-    source ./devel/setup.bash
+    echo source $(pwd)/devel/setup.bash >> ~/.bashrc
+    source ~/.bashrc
+
+**Note:** If you are using a different console interface like zsh, you have to change the `source` command like this : `echo source $(pwd)/devel/setup.zsh >> ~/.zshrc` and `source ~/.zshrc`.
+
+**Error:** If an error about `/usr/lib/x86_64-linux-gnu/libEGL.so` is blocking the compilation, simply use the following command to repair the libEGl symlink. Then restart the `catkin_make` command.
+
+```
+#Only on libEGL error
+sudo rm /usr/lib/x86_64-linux-gnu/libEGL.so; sudo ln /usr/lib/x86_64-linux-gnu/libEGL.so.1 /usr/lib/x86_64-linux-gnu/libEGL.so
+```
 
 ### Run the program
 
@@ -83,7 +93,7 @@ Specify your launch parameters in the zed_camera.launch file available  [here](h
  svo_file                     | Specify SVO filename                                                 | Path to an SVO file         
  resolution                   | Select ZED camera resolution                                       | '0': HD2K, '1': HD1080, '2': HD720, '3': VGA
   frame_rate                   | Set ZED camera video framerate | int                      
-  sensing_mode                 | Select depth sensing mode                                          | '0': FILL, '1': STANDARD                   
+  sensing_mode                 | Select depth sensing mode                                          | '0': STANDARD, '1': FILL                    
  quality                      | Select depth map quality                                       | '0': NONE, '1': PERFORMANCE, '2': MEDIUM, '3': QUALITY
  openni_depth_mode            | Convert 32bit depth in meters to 16bit in millimeters                       | '0': 32bit float meters, '1': 16bit uchar millimeters   
  zed_id                    | Select a ZED camera by its ID. ID are assigned by Ubuntu. Useful when multiple cameras are connected. ID is ignored if an SVO path is specified.                      | int, default '0'
