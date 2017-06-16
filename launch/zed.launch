@@ -2,9 +2,9 @@
 
   <arg name="svo_file" default=""/>
   <arg name="zed_id" default="0"/>
-  <arg name="resolution" default="2"/>
-  <arg name="frame_rate" default="60"/>
-
+  <arg name="resolution" default="3"/>
+  <arg name="frame_rate" default="30"/>
+  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find miner)/config/rosconsole.config"/>
   <group ns="zed">
     <include file="$(find zed_wrapper)/launch/zed_camera.launch">
       <arg name="svo_file" value="$(arg svo_file)" />
