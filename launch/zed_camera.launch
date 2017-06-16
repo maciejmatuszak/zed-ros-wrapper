@@ -1,6 +1,9 @@
 <launch>
   <arg name="svo_file"/>
   <arg name="zed_id"/>
+  <arg name="resolution" default="2"/>
+  <arg name="frame_rate" default="60"/>
+
 
   <include file="$(find zed_wrapper)/launch/zed_tf.launch" />
   <node name="zed_wrapper_node" pkg="zed_wrapper" type="zed_wrapper_node" output="screen">
@@ -11,10 +14,10 @@
     <!-- ZED parameters -->
     <param name="zed_id"                value="$(arg zed_id)" />
 
-    <param name="resolution"            value="2" />
+    <param name="resolution"            value="$(arg resolution)" />
     <param name="quality"               value="1" />
     <param name="sensing_mode"          value="0" />
-    <param name="frame_rate"            value="60" />
+    <param name="frame_rate"            value="$(arg frame_rate)" />
     <param name="odometry_db"           value="" />
     <param name="openni_depth_mode"     value="0" />
     <param name="gpu_id"                value="-1" />

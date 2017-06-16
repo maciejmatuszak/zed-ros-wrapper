@@ -2,11 +2,15 @@
 
   <arg name="svo_file" default=""/>
   <arg name="zed_id" default="0"/>
+  <arg name="resolution" default="2"/>
+  <arg name="frame_rate" default="60"/>
 
   <group ns="zed">
     <include file="$(find zed_wrapper)/launch/zed_camera.launch">
       <arg name="svo_file" value="$(arg svo_file)" />
       <arg name="zed_id" value="$(arg zed_id)" />
+      <arg name="resolution" value="$(arg resolution)" />
+      <arg name="frame_rate" value="$(arg frame_rate)" />
     </include>
   </group>
 
