@@ -107,6 +107,7 @@ namespace zed_wrapper {
 
         //Tracking variables
         sl::Pose pose;
+        bool always_track;
 
         // zed object
         sl::InitParameters param;
@@ -445,14 +446,14 @@ namespace zed_wrapper {
                     runParams.enable_point_cloud = true;
                 // Run the loop only if there is some subscribers
                 if (runLoop) {
-                    if (odom_SubNumber > 0 && !tracking_activated) { //Start the tracking
+                    if ((odom_SubNumber > 0 || always_track) && !tracking_activated) { //Start the tracking
                         if (odometry_DB != "" && !file_exist(odometry_DB)) {
                             odometry_DB = "";
                             NODELET_WARN("odometry_DB path doesn't exist or is unreachable.");
                         }
                         zed->enableTracking(trackParams);
                         tracking_activated = true;
-                    } else if (odom_SubNumber == 0 && tracking_activated) { //Stop the tracking
+                    } else if (odom_SubNumber == 0 && always_track == false && tracking_activated) { //Stop the tracking
                         zed->disableTracking();
                         tracking_activated = false;
                     }
@@ -593,6 +594,7 @@ namespace zed_wrapper {
             gpu_id = -1;
             zed_id = 0;
             odometry_DB = "";
+            always_track = false;
 
             std::string img_topic = "image_rect_color";
             std::string img_raw_topic = "image_raw_color";
@@ -662,6 +664,8 @@ namespace zed_wrapper {
             nh_ns.getParam("point_cloud_topic", point_cloud_topic);
 
             nh_ns.getParam("odometry_topic", odometry_topic);
+            nh_ns.param<bool>("always_track", always_track, always_track);
+            nh_ns.getParam("always_track", odometry_topic);
 
             nh_ns.param<std::string>("svo_filepath", svo_filepath, std::string());
 

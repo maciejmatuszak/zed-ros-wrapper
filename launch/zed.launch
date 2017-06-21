@@ -4,6 +4,7 @@
   <arg name="zed_id" default="0"/>
   <arg name="resolution" default="3"/>
   <arg name="frame_rate" default="30"/>
+  <arg name="always_track" default="false"/>
   <env name="ROSCONSOLE_CONFIG_FILE" value="$(find miner)/config/rosconsole.config"/>
   <group ns="zed">
     <include file="$(find zed_wrapper)/launch/zed_camera.launch">
@@ -11,6 +12,7 @@
       <arg name="zed_id" value="$(arg zed_id)" />
       <arg name="resolution" value="$(arg resolution)" />
       <arg name="frame_rate" value="$(arg frame_rate)" />
+      <arg name="always_track" value="$(arg always_track)" />
     </include>
   </group>
 
