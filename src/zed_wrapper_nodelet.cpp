@@ -438,6 +438,10 @@ namespace zed_wrapper {
                 int depth_SubNumber = pub_depth.getNumSubscribers();
                 int cloud_SubNumber = pub_cloud.getNumSubscribers();
                 int odom_SubNumber = pub_odom.getNumSubscribers();
+                if(always_track && odom_SubNumber == 0)
+                {
+                    odom_SubNumber = 1;
+                }
                 bool runLoop = (rgb_SubNumber + rgb_raw_SubNumber + left_SubNumber + left_raw_SubNumber + right_SubNumber + right_raw_SubNumber + depth_SubNumber + cloud_SubNumber + odom_SubNumber) > 0;
 
 
@@ -446,14 +450,16 @@ namespace zed_wrapper {
                     runParams.enable_point_cloud = true;
                 // Run the loop only if there is some subscribers
                 if (runLoop) {
-                    if ((odom_SubNumber > 0 || always_track) && !tracking_activated) { //Start the tracking
+                     if (odom_SubNumber > 0 && !tracking_activated) { //Start the tracking
                         if (odometry_DB != "" && !file_exist(odometry_DB)) {
                             odometry_DB = "";
                             NODELET_WARN("odometry_DB path doesn't exist or is unreachable.");
                         }
+                        NODELET_INFO("enabling tracking");
                         zed->enableTracking(trackParams);
                         tracking_activated = true;
-                    } else if (odom_SubNumber == 0 && always_track == false && tracking_activated) { //Stop the tracking
+                    } else if (odom_SubNumber == 0 && tracking_activated) { //Stop the tracking
+                        NODELET_INFO("disabling tracking");
                         zed->disableTracking();
                         tracking_activated = false;
                     }
@@ -487,11 +493,12 @@ namespace zed_wrapper {
                                 std::this_thread::sleep_for(std::chrono::milliseconds(2000));
                             }
                             tracking_activated = false;
-                            if (odom_SubNumber > 0) { //Start the tracking
+                            if (odom_SubNumber > 0 ) { //Start the tracking
                                 if (odometry_DB != "" && !file_exist(odometry_DB)) {
                                     odometry_DB = "";
                                     NODELET_WARN("odometry_DB path doesn't exist or is unreachable.");
                                 }
+                                NODELET_INFO("enabling tracking");
                                 zed->enableTracking(trackParams);
                                 tracking_activated = true;
                             }
