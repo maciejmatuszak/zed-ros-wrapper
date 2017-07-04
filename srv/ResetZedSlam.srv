@@ -1,0 +1,15 @@
+#Resets The ZED SLAM tracking and reinitialize with known x,y,z position and qx, qy, qz, qw Quaternions for orientation
+
+#Translation
+float32 tx
+float32 ty
+float32 tz
+
+#Orientation Quaternions
+float32 qx
+float32 qy
+float32 qz
+float32 qw
+---
+#result true/false
+int8 result

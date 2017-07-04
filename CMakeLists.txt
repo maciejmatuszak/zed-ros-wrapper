@@ -35,11 +35,19 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   pcl_conversions
   nodelet
+  message_generation
 )
 
 generate_dynamic_reconfigure_options(
   cfg/Zed.cfg
 )
+
+add_service_files(
+  FILES
+  ResetZedSlam.srv
+)
+
+generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(
   CATKIN_DEPENDS
@@ -52,6 +60,7 @@ catkin_package(
     tf2_ros
     pcl_conversions
 )
+
 
 ###############################################################################
 # INCLUDES
@@ -86,7 +95,7 @@ set(LINK_LIBRARIES
 
 add_library(ZEDWrapper src/zed_wrapper_nodelet.cpp)
 target_link_libraries(ZEDWrapper ${LINK_LIBRARIES})
-add_dependencies(ZEDWrapper ${PROJECT_NAME}_gencfg)
+add_dependencies(ZEDWrapper ${PROJECT_NAME}_gencfg ${PROJECT_NAME}_gencpp)
 
 add_executable(zed_wrapper_node src/zed_wrapper_node.cpp)
 target_link_libraries(zed_wrapper_node ZEDWrapper ${LINK_LIBRARIES})

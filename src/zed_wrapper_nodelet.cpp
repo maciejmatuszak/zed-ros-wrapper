@@ -62,6 +62,7 @@
 #include <pcl/point_types.h>
 
 #include <sl/Camera.hpp>
+#include "zed_wrapper/ResetZedSlam.h"
 
 using namespace std;
 
@@ -85,6 +86,7 @@ namespace zed_wrapper {
         ros::Publisher pub_depth_cam_info;
         ros::Publisher pub_odom;
 
+        ros::ServiceServer reset_service;
         // tf
         tf2_ros::TransformBroadcaster transform_odom_broadcaster;
         std::string left_frame_id;
@@ -591,6 +593,23 @@ namespace zed_wrapper {
             } // while loop
             zed.reset();
         }
+
+        bool resetZedSlam(zed_wrapper::ResetZedSlam::Request  &req, zed_wrapper::ResetZedSlam::Response &res)
+        {
+            sl::Vector4<float> v(req.qx,req.qy, req.qz, req.qw);
+
+            sl::Orientation orientation(v);
+            sl::Rotation rotation(orientation);
+            sl::Translation translation(req.tx, req.ty, req.tz);
+            sl::Transform resetState(rotation, translation);
+            NODELET_INFO("Reseting Tracking...");
+            zed->resetTracking(resetState);
+            NODELET_INFO("Reseting Tracking...DONE");
+            res.result = true;
+
+            return true;
+        }
+
         boost::shared_ptr<dynamic_reconfigure::Server<zed_wrapper::ZedConfig>> server;
         void onInit() {
             // Launch file parameters
@@ -745,6 +764,8 @@ namespace zed_wrapper {
             //Odometry publisher
             pub_odom = nh.advertise<nav_msgs::Odometry>(odometry_topic, 1);
             NODELET_INFO_STREAM("Advertized on topic " << odometry_topic);
+
+            reset_service = nh.advertiseService("reset_zed_slam", &ZEDWrapperNodelet::resetZedSlam, this);
 
             device_poll_thread = boost::shared_ptr<boost::thread>
                     (new boost::thread(boost::bind(&ZEDWrapperNodelet::device_poll, this)));
