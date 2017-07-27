@@ -5,7 +5,9 @@
   <arg name="resolution" default="3"/>
   <arg name="frame_rate" default="30"/>
   <arg name="always_track" default="false"/>
-  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find miner)/config/rosconsole.config"/>
+  <arg name="confidence" default="80"/>
+
+  <!-- <env name="ROSCONSOLE_CONFIG_FILE" value="$(find miner)/config/rosconsole.config"/> -->
   <group ns="zed">
     <include file="$(find zed_wrapper)/launch/zed_camera.launch">
       <arg name="svo_file" value="$(arg svo_file)" />
