@@ -3,6 +3,7 @@
   <arg name="zed_id"/>
   <arg name="resolution" default="2"/>
   <arg name="frame_rate" default="60"/>
+  <arg name="confidence" default="80"/>
   <arg name="always_track" default="false"/>
 
   <include file="$(find zed_wrapper)/launch/zed_tf.launch" />
@@ -21,7 +22,7 @@
     <param name="odometry_db"           value="" />
     <param name="openni_depth_mode"     value="0" />
     <param name="gpu_id"                value="-1" />
-    <param name="confidence"            value="80" />
+    <param name="confidence"            value="$(arg confidence)" />
 
     <!-- ROS topic names -->
     <param name="rgb_topic"             value="rgb/image_rect_color" />
