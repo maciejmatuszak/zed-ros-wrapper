@@ -749,7 +749,6 @@ namespace zed_wrapper {
 
             nh_ns.getParam("odometry_topic", odometry_topic);
             nh_ns.param<bool>("always_track", always_track, always_track);
-            nh_ns.getParam("always_track", odometry_topic);
 
             nh_ns.param<std::string>("svo_filepath", svo_filepath, std::string());
 
