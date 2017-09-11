@@ -33,7 +33,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <arg name="odometry_frame"        value="$(arg odometry_frame)" />
             <arg name="resolution" value="$(arg resolution)" />
             <arg name="frame_rate" value="$(arg frame_rate)" />
-            <arg name="always_track" value="$(arg always_track)" />
             <arg name="svo_file" value="$(arg svo_file)" />
             <arg name="zed_id" value="$(arg zed_id)" />
             <arg name="always_track" value="$(arg always_track)" />
