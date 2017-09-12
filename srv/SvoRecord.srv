@@ -1,0 +1,19 @@
+# Compression mode constants:
+# RAW images, no compression.
+uint8 SVO_COMPRESSION_MODE_RAW = 0
+
+#new Lossless, with PNG/ZSTD based compression : avg size = 42% of RAW
+uint8 SVO_COMPRESSION_MODE_LOSSLESS = 1
+
+#new Lossy, with JPEG based compression : avg size = 22% of RAW
+uint8 SVO_COMPRESSION_MODE_LOSSY = 2
+
+
+
+# start_flag: true - start recording; false stop recording
+bool start_flag
+string file_path
+int8 compression_mode
+---
+#result true/false
+int8 result
