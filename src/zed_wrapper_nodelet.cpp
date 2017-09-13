@@ -66,6 +66,7 @@
 
 #include <sl/Camera.hpp>
 #include "zed_wrapper/ResetZedSlam.h"
+#include "zed_wrapper/SvoRecord.h"
 
 using namespace std;
 
@@ -90,6 +91,7 @@ namespace zed_wrapper {
         ros::Publisher pub_odom;
 
         ros::ServiceServer reset_service;
+        ros::ServiceServer record_service;
         // tf
         tf2_ros::TransformBroadcaster transform_odom_broadcaster;
         std::string left_frame_id;
@@ -119,6 +121,7 @@ namespace zed_wrapper {
         //Tracking variables
         sl::Pose pose;
         bool always_track;
+        bool svo_recording_enabled;
         tf2::Transform base_transform;
 
         // zed object
@@ -450,6 +453,7 @@ namespace zed_wrapper {
                     odom_SubNumber = 1;
                 }
                 bool runLoop = (rgb_SubNumber + rgb_raw_SubNumber + left_SubNumber + left_raw_SubNumber + right_SubNumber + right_raw_SubNumber + depth_SubNumber + cloud_SubNumber + odom_SubNumber) > 0;
+                runLoop = runLoop || svo_recording_enabled;
 
                 runParams.enable_point_cloud = false;
                 if (cloud_SubNumber > 0)
@@ -509,6 +513,11 @@ namespace zed_wrapper {
                             }
                         }
                         continue;
+                    }
+
+                    if(svo_recording_enabled)
+                    {
+                        zed->record();
                     }
 
                     old_t = ros::Time::now();
@@ -633,7 +642,81 @@ namespace zed_wrapper {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10)); // No subscribers, we just wait
                 }
             } // while loop
+            zed->disableRecording();
             zed.reset();
+        }
+
+        bool recordSvo(zed_wrapper::SvoRecord::Request  &req, zed_wrapper::SvoRecord::Response &res)
+        {
+            res.result = true;
+            sl::ERROR_CODE err;
+            //Request to cancel recording
+            if(req.start_flag == false)
+            {
+                if(svo_recording_enabled)
+                {
+                    zed->disableRecording();
+                    svo_recording_enabled = false;
+                    NODELET_INFO_STREAM("Recording stoped");
+                }
+                else
+                {
+                    NODELET_INFO_STREAM("Recording was already stoped");
+                }
+            }
+            //Request to start recording
+            else if(req.start_flag == true)
+            {
+                //make sure compresion arg is valid
+                sl::SVO_COMPRESSION_MODE compression_mode = static_cast<sl::SVO_COMPRESSION_MODE>(req.compression_mode);
+
+                string compressionName;
+                if(compression_mode == sl::SVO_COMPRESSION_MODE_RAW)
+                {
+                    compressionName = "RAW";
+                }
+                else if(compression_mode == sl::SVO_COMPRESSION_MODE_LOSSLESS)
+                {
+                    compressionName = "LOSSLESS";
+                }
+                else if(compression_mode == sl::SVO_COMPRESSION_MODE_LOSSY)
+                {
+                    compressionName = "LOSSY";
+                }
+                else
+                {
+                    NODELET_ERROR_STREAM("Invalid compression mode: " << req.compression_mode);
+                    res.result = false;
+                    return false;
+                }
+
+                //if we recording then stop
+                if(svo_recording_enabled)
+                {
+                    NODELET_INFO_STREAM("Recording in progress; Stopping.");
+                    zed->disableRecording();
+                    svo_recording_enabled = false;
+                }
+
+                // start recording
+                zed->enableRecording(req.file_path.c_str(), compression_mode);
+                if (err != sl::SUCCESS)
+                {
+                    NODELET_ERROR_STREAM("Recording initialization error: " << errorCode2str(err));
+                    if (err == sl::ERROR_CODE_SVO_RECORDING_ERROR)
+                    {
+                        NODELET_ERROR_STREAM(" Note : This error mostly comes from a wrong path or missing write permissions.");
+                    }
+                    res.result = false;
+                    return false;
+                }
+                else
+                {
+                    svo_recording_enabled = true;
+                    NODELET_INFO_STREAM("Recording started; file: " << req.file_path);
+                }
+            }
+            return true;
         }
 
         bool resetZedSlam(zed_wrapper::ResetZedSlam::Request  &req, zed_wrapper::ResetZedSlam::Response &res)
@@ -831,6 +914,7 @@ namespace zed_wrapper {
             NODELET_INFO_STREAM("Advertized on topic " << odometry_topic);
 
             reset_service = nh.advertiseService("reset_zed_slam", &ZEDWrapperNodelet::resetZedSlam, this);
+            record_service = nh.advertiseService("record_svo", &ZEDWrapperNodelet::recordSvo, this);
 
             device_poll_thread = boost::shared_ptr<boost::thread>
                     (new boost::thread(boost::bind(&ZEDWrapperNodelet::device_poll, this)));

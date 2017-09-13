@@ -76,6 +76,7 @@ generate_dynamic_reconfigure_options(
 add_service_files(
   FILES
   ResetZedSlam.srv
+  SvoRecord.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs)
