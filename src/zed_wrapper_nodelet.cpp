@@ -650,6 +650,7 @@ namespace zed_wrapper {
         {
             res.result = true;
             sl::ERROR_CODE err;
+            //Request to cancel recording
             if(req.start_flag == false)
             {
                 if(svo_recording_enabled)
@@ -663,6 +664,7 @@ namespace zed_wrapper {
                     NODELET_INFO_STREAM("Recording was already stoped");
                 }
             }
+            //Request to start recording
             else if(req.start_flag == true)
             {
                 //make sure compresion arg is valid
@@ -691,7 +693,7 @@ namespace zed_wrapper {
                 //if we recording then stop
                 if(svo_recording_enabled)
                 {
-                    NODELET_INFO_STREAM("Recording in progress stopping");
+                    NODELET_INFO_STREAM("Recording in progress; Stopping.");
                     zed->disableRecording();
                     svo_recording_enabled = false;
                 }
