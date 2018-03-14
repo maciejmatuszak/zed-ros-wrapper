@@ -582,7 +582,7 @@ namespace zed_wrapper {
                             NODELET_WARN("odometry_DB path doesn't exist or is unreachable.");
                         }
                         NODELET_INFO("enabling tracking");
-                        zed->enableTracking(trackParams);
+                        zed.enableTracking(trackParams);
                         tracking_activated = true;
                     } else if (!depth_stabilization && odom_SubNumber == 0 && tracking_activated) { //Stop the tracking
                         zed.disableTracking();
@@ -634,7 +634,7 @@ namespace zed_wrapper {
                                     NODELET_WARN("odometry_DB path doesn't exist or is unreachable.");
                                 }
                                 NODELET_INFO("enabling tracking");
-                                zed->enableTracking(trackParams);
+                                zed.enableTracking(trackParams);
                                 tracking_activated = true;
                             }
                         }
@@ -643,7 +643,7 @@ namespace zed_wrapper {
 
                     if(svo_recording_enabled)
                     {
-                        zed->record();
+                        zed.record();
                     }
 
                     old_t = ros::Time::now();
@@ -785,7 +785,7 @@ namespace zed_wrapper {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10)); // No subscribers, we just wait
                 }
             } // while loop
-            zed->disableRecording();
+            zed.disableRecording();
             zed.close();
         }
 
@@ -798,7 +798,7 @@ namespace zed_wrapper {
             {
                 if(svo_recording_enabled)
                 {
-                    zed->disableRecording();
+                    zed.disableRecording();
                     svo_recording_enabled = false;
                     NODELET_INFO_STREAM("Recording stoped");
                 }
@@ -837,12 +837,12 @@ namespace zed_wrapper {
                 if(svo_recording_enabled)
                 {
                     NODELET_INFO_STREAM("Recording in progress; Stopping.");
-                    zed->disableRecording();
+                    zed.disableRecording();
                     svo_recording_enabled = false;
                 }
 
                 // start recording
-                zed->enableRecording(req.file_path.c_str(), compression_mode);
+                zed.enableRecording(req.file_path.c_str(), compression_mode);
                 if (err != sl::SUCCESS)
                 {
                     NODELET_ERROR_STREAM("Recording initialization error: " << errorCode2str(err));
@@ -871,7 +871,7 @@ namespace zed_wrapper {
             sl::Translation translation(req.tx, req.ty, req.tz);
             sl::Transform resetState(rotation, translation);
             NODELET_INFO("Reseting Tracking...");
-            zed->resetTracking(resetState);
+            zed.resetTracking(resetState);
             NODELET_INFO("Reseting Tracking...DONE");
             res.result = true;
 
