@@ -18,7 +18,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <launch>
     <!-- Odometry coordinate frame -->
-    <arg name="odometry_frame"        default="map" />
+    <arg name="odometry_frame"       default="map" />
+    <arg name="camera_model"          default="0" /> <!-- 0=ZED, 1=ZEDM-->
+    <arg name="serial_number"           default="0" /> 
   <arg name="svo_file" default=""/>
   <arg name="zed_id" default="0"/>
   <!-- resolution and frame_rate:
@@ -38,6 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <include file="$(find zed_wrapper)/launch/zed_camera.launch">
             <!-- compliant mode for rviz -->
             <arg name="odometry_frame"        value="$(arg odometry_frame)" />
+            <arg name="camera_model"        value="$(arg camera_model)" />
+            <arg name="serial_number"           default="$(arg serial_number)" /> 
             <arg name="resolution" value="$(arg resolution)" />
             <arg name="frame_rate" value="$(arg frame_rate)" />
             <arg name="svo_file" value="$(arg svo_file)" />
